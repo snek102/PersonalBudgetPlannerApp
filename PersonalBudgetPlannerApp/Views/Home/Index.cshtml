@@ -1,0 +1,97 @@
+﻿
+@using PersonalBudgetPlannerApp.Models
+@{
+    ViewData["Title"] = "Dashboard"; 
+}
+
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    
+    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white flex flex-col items-center justify-center">
+        <h2 class="text-3xl font-extrabold mb-2">Total Income</h2>
+        <p class="text-5xl font-bold">@string.Format("{0:C}", ViewBag.TotalIncome)</p>
+    </div>
+
+    
+    <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow-lg p-6 text-white flex flex-col items-center justify-center">
+        <h2 class="text-3xl font-extrabold mb-2">Total Expenses</h2>
+        <p class="text-5xl font-bold">@string.Format("{0:C}", ViewBag.TotalExpenses)</p>
+    </div>
+
+    
+    @{
+        
+        var balanceColor = ViewBag.Balance >= 0 ? "from-blue-500 to-blue-600" : "from-purple-500 to-purple-600";
+    }
+    <div class="bg-gradient-to-r @balanceColor rounded-lg shadow-lg p-6 text-white flex flex-col items-center justify-center">
+        <h2 class="text-3xl font-extrabold mb-2">Current Balance</h2>
+        <p class="text-5xl font-bold">@string.Format("{0:C}", ViewBag.Balance)</p>
+    </div>
+</div>
+
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Recent Incomes</h3>
+        @if (ViewBag.RecentIncomes != null && ViewBag.RecentIncomes.Count > 0)
+        {
+            <ul class="space-y-3">
+                @foreach (var income in ViewBag.RecentIncomes)
+                {
+                    <li class="flex justify-between items-center bg-green-50 text-green-800 p-3 rounded-md shadow-sm">
+                        <div>
+                            <span class="font-semibold">@income.Description</span>
+                            <span class="text-sm text-gray-600 block">@income.IncomeDate.ToString("yyyy-MM-dd")</span>
+                        </div>
+                        <span class="font-bold text-xl">@string.Format("{0:C}", income.Amount)</span>
+                    </li>
+                }
+            </ul>
+            <div class="text-right mt-4">
+                <a asp-controller="Income" asp-action="Index" class="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300">
+                    View All Incomes
+                </a>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">No recent incomes to display. <a asp-controller="Income" asp-action="Create" class="text-blue-600 hover:underline">Add one now!</a></p>
+        }
+    </div>
+
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Recent Expenses</h3>
+        @if (ViewBag.RecentExpenses != null && ViewBag.RecentExpenses.Count > 0)
+        {
+            <ul class="space-y-3">
+                @foreach (var expense in ViewBag.RecentExpenses)
+                {
+                    <li class="flex justify-between items-center bg-red-50 text-red-800 p-3 rounded-md shadow-sm">
+                        <div>
+                            <span class="font-semibold">@expense.Description</span>
+                            <span class="text-sm text-gray-600 block">@expense.ExpenseDate.ToString("yyyy-MM-dd")</span>
+                            <span class="text-xs text-gray-500">(@expense.Category?.Name ?? "N/A")</span>
+                        </div>
+                        <span class="font-bold text-xl">@string.Format("{0:C}", expense.Amount)</span>
+                    </li>
+                }
+            </ul>
+            <div class="text-right mt-4">
+                <a asp-controller="Expense" asp-action="Index" class="inline-block bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300">
+                    View All Expenses
+                </a>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-600">No recent expenses to display. <a asp-controller="Expense" asp-action="Create" class="text-blue-600 hover:underline">Add one now!</a></p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    </script>
+}

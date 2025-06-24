@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PersonalBudgetPlannerApp</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PersonalBudgetPlannerApp.styles.css" asp-append-version="true" />
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <header class="bg-blue-600 shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            
+            <a class="text-white text-2xl font-bold rounded-md px-3 py-1 hover:bg-blue-700 transition duration-300" asp-area="" asp-controller="Home" asp-action="Index">BudgetBuddy</a>
+            
+            <div class="flex space-x-4">
+                <a class="text-white text-lg rounded-md px-3 py-1 hover:bg-blue-700 transition duration-300" asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a>
+                <a class="text-white text-lg rounded-md px-3 py-1 hover:bg-blue-700 transition duration-300" asp-area="" asp-controller="Income" asp-action="Index">Income</a>
+                <a class="text-white text-lg rounded-md px-3 py-1 hover:bg-blue-700 transition duration-300" asp-area="" asp-controller="Expense" asp-action="Index">Expenses</a>
+                <a class="text-white text-lg rounded-md px-3 py-1 hover:bg-blue-700 transition duration-300" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-t pt-4 pb-8 text-center text-gray-600 bg-white shadow-inner">
+        <div class="container mx-auto px-4">
+            &copy; 2025 - PersonalBudgetPlannerApp - Made by Gautam
+        </div>
+    </footer>
+
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
