@@ -1,15 +1,17 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering; 
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalBudgetPlannerApp.Data;
 using PersonalBudgetPlannerApp.Models;
 using System.Collections.Generic;
 
-namespace PersonalBudgetPlannerApp.Controllers{
-    public class ExpenseController : Controller{
+namespace PersonalBudgetPlannerApp.Controllers
+{
+    public class ExpenseController : Controller
+    {
         private readonly DatabaseHelper _dbHelper;
 
-        public ExpenseController(DatabaseHelper dbHelper){
+        public ExpenseController(DatabaseHelper dbHelper)
+        {
             _dbHelper = dbHelper;
         }
 
@@ -21,59 +23,65 @@ namespace PersonalBudgetPlannerApp.Controllers{
 
         public IActionResult Create()
         {
-      
             ViewBag.Categories = new SelectList(_dbHelper.GetCategories(), "Id", "Name");
             return View();
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Amount,Description,ExpenseDate,CategoryId")] Expense expense)
+        public IActionResult Create(Expense expense)
         {
-            if (ModelState.IsValid)
+            // Debugging: log bound values and errors
+            Console.WriteLine($"DEBUG → CategoryId = {expense.CategoryId}");
+            Console.WriteLine($"DEBUG → Amount = {expense.Amount}, Description = {expense.Description}, ExpenseDate = {expense.ExpenseDate}");
+
+            if (!ModelState.IsValid)
             {
-                try
+                foreach (var entry in ModelState)
                 {
-                    _dbHelper.AddExpense(expense);
-                    TempData["SuccessMessage"] = "Expense added successfully!";
-                    return RedirectToAction(nameof(Index));
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"DEBUG → ModelState Error on '{entry.Key}': {error.ErrorMessage}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "An error occurred while saving the expense: " + ex.Message);
-                }
+
+                // Repopulate dropdown to avoid nulls
+                ViewBag.Categories = new SelectList(_dbHelper.GetCategories(), "Id", "Name", expense.CategoryId);
+                return View(expense);
             }
+
+            try
+            {
+                _dbHelper.AddExpense(expense);
+                TempData["SuccessMessage"] = "Expense added successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR → Exception during AddExpense: {ex.Message}");
+                ModelState.AddModelError("", "An error occurred while saving the expense.");
+            }
+
             ViewBag.Categories = new SelectList(_dbHelper.GetCategories(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
-        
         public IActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var expense = _dbHelper.GetExpenseById(id.Value);
-            if (expense == null)
-            {
-                return NotFound();
-            }
+            if (expense == null) return NotFound();
+
             ViewBag.Categories = new SelectList(_dbHelper.GetCategories(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,Amount,Description,ExpenseDate,CategoryId")] Expense expense)
+        public IActionResult Edit(int id, Expense expense)
         {
-            if (id != expense.Id)
-            {
-                return NotFound();
-            }
+            if (id != expense.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -88,22 +96,17 @@ namespace PersonalBudgetPlannerApp.Controllers{
                     ModelState.AddModelError("", "An error occurred while updating the expense: " + ex.Message);
                 }
             }
+
             ViewBag.Categories = new SelectList(_dbHelper.GetCategories(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
         public IActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var expense = _dbHelper.GetExpenseById(id.Value);
-            if (expense == null)
-            {
-                return NotFound();
-            }
+            if (expense == null) return NotFound();
 
             return View(expense);
         }

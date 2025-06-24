@@ -1,17 +1,27 @@
-
-using PersonalBudgetPlannerApp.Data; 
+﻿using PersonalBudgetPlannerApp.Data;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<DatabaseHelper>();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment()){
+// ✅ Global Indian culture setup for ₹ symbol
+var supportedCultures = new[] { new CultureInfo("en-IN") };
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-IN"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+};
+app.UseRequestLocalization(localizationOptions);
+
+if (!app.Environment.IsDevelopment())
+{
     app.UseExceptionHandler("/Home/Error");
-   
     app.UseHsts();
 }
 
